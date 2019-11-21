@@ -1,0 +1,45 @@
+<script src="../../../static/common/hplus/js/jquery.min.js?v=2.1.4"></script>
+<script src="../../../static/common/hplus/js/bootstrap.min.js?v=3.3.6"></script>
+<script src="../../../static/common/hplus/js/content.min.js?v=1.0.0"></script>
+<script src="../../../static/common/page.js"></script>
+<script>
+    var totalNum,pageSize,totalPage;
+    //审核
+    $(".order-check").off().click(function () {
+        var id = $(this).attr("code");
+        $("#normalbox").show();
+        $("#send").off().click(function () {
+            var issue = $("#issue").val();
+            $.ajax({
+                type: "post",
+                url: "{:url('admin/Noticeform/check')}",
+                dataType: "json",
+                data: {
+                    issue: issue,
+                    id: id,
+                },
+                success: function (data) {
+                    if(data.code==1){
+                        $("#normalbox").hide();
+                        $("#result-msg").html(data.msg);
+                        $(".result").show();
+                        $("#resbtn").click(function() {
+                            parent.location.reload(); 
+                        })
+                    }else{
+                        $("#normalbox").hide();
+                        $("#result-msg").html(data.msg);
+                        $(".result").show();
+                        $("#resbtn").click(function() {
+                            $(".result").hide();
+                        })
+                    }
+                }
+            })
+        })
+    })
+$(".ccancel").click(function () {
+    $("#normalbox").hide();
+})
+
+</script>

@@ -1,0 +1,22 @@
+<script src="../../../static/common/hplus/js/jquery.min.js?v=2.1.4"></script>
+<script src="../../../static/common/hplus/js/bootstrap.min.js?v=3.3.6"></script>
+<script>
+    $("#login").click(function(){
+        var datalist=$("#formlist").serialize();
+        $.ajax({
+            url:"{:url('admin/login/logincheck')}",
+            type:"post",
+            //表单序列化，可以获取表单的所有内容
+            data:datalist,
+            dataType:"json",
+            success: function (data) {
+                if(data.code==1){
+                    location.href=data.url;
+                }else{
+                    $("#errormsg").html(data.msg);
+                }
+            }
+        });
+        return false;
+    })
+</script>

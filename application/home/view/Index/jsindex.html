@@ -1,0 +1,121 @@
+<script src="../../../static/common/hplus/js/jquery.min.js?v=2.1.4"></script>
+<script src="../../../static/common/hplus/js/bootstrap.min.js?v=3.3.6"></script>
+<script src="../../../static/home/js/count-number.js"></script>
+<script>
+    //轮播图
+    var imgsdata=document.getElementById("picture-box").getElementsByTagName("img");
+    var lidata=document.getElementById("picture-node").getElementsByTagName("li");
+    var index=0;
+    for(var i=0;i<lidata.length;i++){
+        lidata[i].onmouseover= function (e) {
+            index= e.target.id;
+            for(var j=0;j<imgsdata.length;j++){
+                if(index==j){
+                    lidata[j].style.backgroundColor="#ff0000";
+                    imgsdata[j].style.display="block";
+                }else{
+                    lidata[j].style.backgroundColor="#666";
+                    imgsdata[j].style.display="none";
+                }
+            }
+        }
+    }
+    document.getElementById("left").onclick=function() {
+        if (index <= 0) {
+            index = 3;
+        } else {
+            index -= 1;//index=index-1
+        }
+        for (var i = 0; i < 4; i++) {
+            if (i == index) {
+                lidata[i].style.backgroundColor="#ff0000";
+                imgsdata[i].style.display="block";
+            } else {
+                lidata[i].style.backgroundColor="#666";
+                imgsdata[i].style.display="none";
+            }
+        }
+
+    }
+    document.getElementById("right").onclick=function() {
+        if (index >= 3) {
+            index = 0;
+        } else {
+            index += 1;//index=index-1
+        }
+        for (var i = 0; i < 4; i++) {
+            if (i == index) {
+                lidata[i].style.backgroundColor="#ff0000";
+                imgsdata[i].style.display="block";
+            } else {
+                lidata[i].style.backgroundColor="#666";
+                imgsdata[i].style.display="none";
+            }
+        }
+
+    }
+    var timeout=setInterval(startout,4000);
+    function startout(){
+        if(index>=3){
+            index=0;
+        }else{
+            index+=1
+        }
+        for(var i=0;i<lidata.length;i++){
+            if(index==i){
+                lidata[i].style.backgroundColor="#ff0000";
+                imgsdata[i].style.display="block";
+            }else{
+                lidata[i].style.backgroundColor="#666";
+                imgsdata[i].style.display="none";
+            }
+        }
+    }
+    var picturebox=document.getElementById("picture-box");
+    picturebox.onmouseover= function () {
+        window.clearTimeout(timeout);
+    }
+    picturebox.onmouseout= function () {
+         timeout=setInterval(startout,4000);
+    }
+    //新闻资讯切换模块
+$(function(){
+    $("#knowledge-fit").click(function(){
+        $("#knowledge-con").hide();
+        $(this).addClass('active').siblings("button").removeClass("active");
+        $("#knowledge-con1").show();
+    });
+    
+    $("#knowledge-ativity").click(function(){
+        $("#knowledge-con1").hide();
+        $(this).addClass('active').siblings("button").removeClass("active");
+        $("#knowledge-con").show();
+    });
+
+})
+// 侧边固定部分
+$(function(){
+    // 侧边固定部分出现
+    $(window).scroll(function(event) {
+        var headerheight=$("#header").height();
+        var slidebgheight=$("#slide-bg").height();
+        var height=headerheight+slidebgheight;
+        var menuheight=$(document).scrollTop();
+        if (menuheight>height) {
+            $(".btn-top").slideDown(500);
+        }else{
+            $(".btn-top").slideUp(500);
+        };
+    });
+    $(".btn-wx").hover(function(){
+        $(".wx-img").show();
+    },function(){
+        $(".wx-img").hide();
+    })
+    $(".btn-phone").hover(function() {
+        $(".menu-phone").show();
+    }, function() {
+        $(".menu-phone").hide();
+    });
+})
+</script>

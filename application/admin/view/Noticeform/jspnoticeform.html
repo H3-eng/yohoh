@@ -1,0 +1,47 @@
+<!-- 基础文件 -->
+<script src="../../../static/common/hplus/js/jquery.min.js?v=2.1.4"></script>
+<script src="../../../static/common/hplus/js/bootstrap.min.js?v=3.3.6"></script>
+<script src="../../../static/common/hplus/js/content.min.js?v=1.0.0"></script>
+<script>
+    //页面加载时动态显示数据
+    $(".check").click(function(){
+        var id=$(this).attr("code");
+        $("#normalbox").show();
+        $(".send").off().click(function () {
+            var chargename=$("#chargename").val();
+            $.ajax({
+                type:"post",
+                url:"{:url('admin/Noticeform/pcheck')}",
+                dataType:"json",
+                data:{
+                    id:id,
+                    chargename:chargename
+                },
+                success:function(data){
+                    if (data) {
+                        $("#normalbox").hide();
+                        $("#result-msg").html("处理成功");
+                        $(".result").show();
+                        $("#resbtn").click(function() {
+                            parent.location.reload(); 
+                        })
+                    }else{
+                        $("#normalbox").hide();
+                        $("#result-msg").html("处理失败");
+                        $(".result").show();
+                        $("#resbtn").click(function() {
+                            $("#result").hide();
+                        })
+                    }
+                }
+            })
+        })
+    })
+    // 结果弹窗关闭
+    $("#resbtn").click(function () {
+        $("#result").hide();
+    })
+    $(".ccancel").click(function () {
+        $("#normalbox").hide();
+    })
+</script>

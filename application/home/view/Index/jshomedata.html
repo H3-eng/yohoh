@@ -1,0 +1,107 @@
+<script src="../../../static/common/hplus/js/jquery.min.js?v=2.1.4"></script>
+<script src="../../../static/common/hplus/js/bootstrap.min.js?v=3.3.6"></script>
+<script>
+    //修改密码
+    $("#updatepwd").click(function () {
+        var name=$("#name").html();
+        $("#petname").val(name);
+        $("#pop-up").show();
+        $("#send").off().click(function () {
+            updatep();
+        })
+    })
+    $("#updateptwo").click(function () {
+        var name=$("#name").html();
+        $("#petname").val(name);
+        $("#pop-up").show();
+        $("#send").off().click(function () {
+            updatep();
+        })
+    })
+    function updatep(){
+        var pwd=$("#newpwd").val();
+        $.ajax({
+            type:"post",
+            url:"{:url('home/Index/updatep')}",
+            dataType:"json",
+            data:{pwd:pwd},
+            success: function (data) {
+                if(data.code==1){
+                    $("#pop-up").hide();
+                    $("#result-msg").html(data.msg)
+                    $("#result").show();
+                }else{
+                    $("#pop-up").hide();
+                    $("#result-msg").html(data.msg)
+                    $("#result").show();
+                }
+            }
+        })
+    }
+    //关闭操作弹窗
+    $("#cancel").click(function () {
+        $("#pop-up").hide();
+    })
+    //关闭提示弹窗
+    $("#resbtn").click(function () {
+        $("#result").hide();
+    })
+    /*修改资料*/
+    $("#edit").click(function () {
+        $(".inputdata").each(function () {
+            $(this).prop("disabled",false);
+        })
+    })
+    $("#updatedata").off().click(function () {
+        var data=$("#formdata").serialize();
+        $.ajax({
+            type:"post",
+            url:"{:url('home/Index/updatedata')}",
+            dataType:"json",
+            data:data,
+            success: function (data) {
+                if(data.code==1){
+                    $("#result-msg").html(data.msg);
+                    $("#result").show();
+                    var petname=$("#pet_name").val();
+                    $("#name").html(petname);
+                }else{
+                    $("#result-msg").html(data.msg);
+                    $("#result").show();
+                }
+            }
+        })
+    })
+    $(function () {
+        $.ajax({
+            type:"get",
+            url:"{:url('home/Index/logsdata')}",
+            dataType:"json",
+            success: function (data) {
+                if(data){
+                    $("#logindata").html(data.create_time);
+                }
+            }
+        })
+    })
+    $(function () {
+        $.ajax({
+            type:"get",
+            url:"{:url('home/Index/memberdata')}",
+            dataType:"json",
+            success: function (data) {
+                console.log(data)
+                if(data){
+                    $("#pet_name").val(data.pet_name);
+                    $(".sex").each(function () {
+                        if(data.sex==$(this).attr("code")){
+                            $(this).prop('checked','checked');
+                        }
+                    });
+                    $("#email").val(data.email);
+                    $("#phone").val(data.phone);
+                }
+            }
+        })
+    })
+</script>

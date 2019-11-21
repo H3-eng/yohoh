@@ -1,0 +1,267 @@
+<!-- 基础文件 -->
+<script src="../../../static/common/hplus/js/jquery.min.js?v=2.1.4"></script>
+<script src="../../../static/common/hplus/js/bootstrap.min.js?v=3.3.6"></script>
+<script src="../../../static/common/hplus/js/content.min.js?v=1.0.0"></script>
+<!-- 分页文件 -->
+<script src="../../../static/common/page.js"></script>
+<script>
+    var totalNum,pageSize,totalPage;
+    //页面加载时动态显示数据
+    function getData(page){
+        $.ajax({
+            type:'get',
+            url:"{:url('admin/Courseform/pcoursebookshow')}",
+            data:{page:page},
+            dataType:"json",
+            success:function(data){
+                if(data){
+                    totalNum=data[0].totalNum;//总记录数
+                    pageSize=data[0].pageSize;//每页数量
+                    totalPage=data[0].totalPage;//总页数
+                    var str='';
+                    for(var i=1;i<data.length;i++){
+                        str+="<tr id=tr_"+data[i].id+">";
+                        str+="<td><input type='checkbox' class='checkbox'code="+data[i].id+"></td>";
+                        str+="<td>"+data[i].id+"</td>";
+                        str+="<td>"+data[i].username+"</td>";
+                        str+="<td>"+data[i].phone+"</td>";
+                        str+="<td>"+data[i].email+"</td>";
+                        str+="<td>"+data[i].course_name+"</td>";
+                        if(data[i].member_id==0){
+                            str+="<td>会员</td>";
+                        }else{
+                            str+="<td>非会员</td>";
+                        }
+                        str+="<td>"+data[i].chargename+"</td>";
+                        str+="<td>"+data[i].issue+"</td>";
+                        str+="<td>"+data[i].operator+"</td>";
+                        str+="<td><a class='fa fa-pencil update' code="+data[i].id+"></a><a  class='fa fa-trash delete' code="+data[i].id+"></a></td>";
+                        str+="</tr>";
+                    }
+                    $("#tbody").html(str);
+                    var datacount=totalNum;
+                    $("#datacount").html(datacount);
+                    $(".delete").off().click(function(){
+                        var id=$(this).attr('code');
+                        del(id);//调用删除数据函数
+                    });
+                    $(".update").off().click(function(){
+                        var id=$(this).attr('code');
+                        updateshow(id);//调用修改数据函数
+                    });
+                    //获取分页样式
+                    if (page==1) {
+                        getPageBar();
+                        $("#table-footer").show();
+                    }
+                }else{
+                    var str='';
+                    str+="<tr><td colspan='10'>数据请求失败</td></tr>";
+                    $("#tbody").html(str);
+                    $("#table-footer").hide();
+                }
+            }
+        })
+    }
+    //页面加载初始化第一页
+    $(function(){
+        getData(1);
+    })
+    function updateshow(id){
+        $("#formlist")[0].reset();
+        $(".updateid").val(id);
+        $("#title").html("修改联系人");
+        $.ajax({
+            type:"post",
+            url:"{:url('admin/Courseform/pbookupdateshow')}",
+            dataType:"json",
+            data:{id:id},
+            success:function(data){
+                if (data) {
+                    $("#chargename").val(data.chargename);
+                    $("#normalbox").show();
+                    $(".updatebtn").off().click(function(){
+                        update();
+                    })
+                }else{
+                    $("#result-msg").html("该操作不可用");
+                    $(".result").show();
+                    $("#resbtn").click(function() {
+                        $(".result").hide();
+                    })
+                }
+            }
+        })
+    }
+    //修改操作
+    function update(){
+        var data=$("#formlist").serialize();
+        $.ajax({
+            type:"post",
+            url:"{:url('admin/Courseform/pbookupdate')}",
+            dataType:"json",
+            data:data,
+            success:function(data){
+                if (data.code==1) {
+                    $("#normalbox").hide();
+                    $("#result-msg").html(data.msg);
+                    $(".result").show();
+                    $("#resbtn").click(function() {
+                        $(".result").hide();
+                        var p=1;
+                        $("#pagelist ul li").each(function () {
+                            if($(this).hasClass("on")){
+                                p=$(this).html();
+                            }
+                        })
+                        getData(p);
+                    });
+                }else {
+                    $("#normalbox").hide();
+                    $("#result-msg").html(data.msg);
+                    $(".result").show();
+                    $("#resbtn").click(function() {
+                        $(".result").hide();
+                    })
+                }
+            }
+        })
+    }
+    // 删除操作
+    function del(id){
+        $("#isdel").show();
+        $("#sure").off().click(function () {
+            $("#isdel").hide();
+            $.ajax({
+                url: "{:url('admin/Courseform/pbookdelete')}",
+                type: 'post',
+                dataType: 'json',
+                data: {id:id},
+                success:function(data){
+                    if (data.code==1) {
+                        $("#result-msg").html(data.msg);
+                        $("#result").show();
+                        $("#resbtn").click(function() {
+                            $(".result").hide();
+                            var p=1;
+                            $("#pagelist ul li").each(function () {
+                                if($(this).hasClass("on")){
+                                    p=$(this).html();
+                                }
+                            })
+                            getData(p);
+                        });
+                    }else{
+                        $("#result-msg").html(data.msg);
+                        $("#result").show();
+                        $("#resbtn").click(function() {
+                            $(".result").hide();
+                        })
+                    }
+                }
+            })
+        })
+    }
+    //动态搜索功能
+    $("#search").off().keyup(function () {
+        $("#searchlist").html('');
+        var data=$(this).val().trim();
+        $.ajax({
+            url: "{:url('admin/Courseform/pbooksearch')}",
+            type: 'post',
+            dataType: 'json',
+            data: {data:data},
+            success:function(data){
+                if(data){
+                    var str="";
+                    if(data.length>5){
+                        data.length=5;
+                    }
+                    for(var i=0;i<data.length;i++){
+                        str+="<li code='"+data[i].id+"'>"+data[i].username+"</li>";
+                    }
+                    var swidth=$("#search").width()+24;
+                    $("#search-msg").css("width",swidth);
+                    $("#search-msg").show();
+                    $("#searchlist").html(str);
+                    //改变列表的颜色
+                    $("#searchlist li").hover(function(){
+                        $(this).css("background-color",'#e7e7e7');
+                    }, function () {
+                        $(this).css("background-color",'#fff');
+                    })
+                    $("#searchlist li").click(function () {
+                        var msg=$(this).html();
+                        $("#search").val(msg);
+                        $("#search-msg").hide();
+                    })
+                }
+            }
+        })
+    })
+    window.onresize = function(){
+        var swidth=$("#search").width()+24;
+        $("#search-msg").css("width",swidth);
+    }
+    //搜索按钮点击开始搜索
+    $("#search-btn").off().click(function () {
+        var data=$("#search").val();
+        $.ajax({
+            url: "{:url('admin/Courseform/pbooksearch')}",
+            type: 'post',
+            dataType: 'json',
+            data: {data:data},
+            success: function (data) {
+                if(data){
+                    var str='';
+                    for(var i=0;i<data.length;i++){
+                        str+="<tr id=tr_"+data[i].id+">";
+                        str+="<td><input type='checkbox' class='checkbox'code="+data[i].id+"></td>";
+                        str+="<td>"+data[i].id+"</td>";
+                        str+="<td>"+data[i].username+"</td>";
+                        str+="<td>"+data[i].phone+"</td>";
+                        str+="<td>"+data[i].email+"</td>";
+                        str+="<td>"+data[i].course_name+"</td>";
+                        if(data[i].member_id==0){
+                            str+="<td>会员</td>";
+                        }else{
+                            str+="<td>非会员</td>";
+                        }
+                        str+="<td>"+data[i].chargename+"</td>";
+                        str+="<td>"+data[i].issue+"</td>";
+                        str+="<td>"+data[i].operator+"</td>";
+                        str+="<td><a class='fa fa-pencil update' code="+data[i].id+"></a><a  class='fa fa-trash delete' code="+data[i].id+"></a></td>";
+                        str+="</tr>";
+                    }
+                    str+="<tr><td colspan='13'><a  class='rehome'>返回第一页</a></td></tr>";
+                    $("#tbody").html(str);
+                    $("#table-footer").hide();
+                    $(".rehome").off().click(function(){
+                        getData(1);
+                    })
+                }else{
+                    var str='';
+                    str+="<tr><td colspan='10'>数据不存在</td></tr>";
+                    str+="<tr><td colspan='10'><a  class='rehome'>返回第一页</a></td></tr>";
+                    $("#tbody").html(str);
+                    $("#table-footer").hide();
+                    $(".rehome").off().click(function(){
+                        getData(1);
+                    })
+                }
+            }
+        })
+    })
+    //操作弹窗关闭
+    $(".ccancel").click(function () {
+        $("#normalbox").hide();
+    })
+    //是否删除弹窗关闭
+    $("#cancel").click(function () {
+        $("#isdel").hide();
+    })
+    // 结果弹窗关闭
+    $("#resbtn").click(function () {
+        $("#result").hide();
+    })
+</script>

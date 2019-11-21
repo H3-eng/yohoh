@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>修改头像页面</title>
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="../../../static/common/hplus/css/bootstrap.min14ed.css?v=3.3.6" rel="stylesheet">
+    <link href="../../../static/common/hplus/css/font-awesome.min93e3.css?v=4.4.0" rel="stylesheet">
+    <link href="../../../static/common/hplus/css/animate.min.css" rel="stylesheet">
+    <link href="../../../static/common/hplus/css/style.min862f.css?v=4.1.0" rel="stylesheet">
+    <!--webupload框架样式-->
+    <link rel="stylesheet" href="../../../static/common/webuploader/webuploader.css">
+    <link rel="stylesheet" type="text/css" href="../../../static/admin/css/base.css">
+    <link rel="stylesheet" type="text/css" href="../../../static/admin/css/avatar.css">
+</head>
+<body class="gray-bg">
+    <div class="wrapper wrapper-content">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>修改头像</h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        <ul class="nav nav-tabs" id="avatar-tab">
+                            <li class="active" id="upload"><a href="javascript:;">本地上传</a>
+                            </li>
+                            <li id="albums"><a href="javascript:;">相册选取</a>
+                            </li>
+                        </ul>
+                        <div class="pic_item m-bottom">
+                            <div class="m-t m-b">
+                                <div id="editorPanelButtons" >
+                                    <p>
+                                        <a href="javascript:;" class=" btn btn-w-m btn-primary button_upload" id="Picker"><i class="fa fa-upload"></i> 上传</a>
+                                        <a href="javascript:;" class="btn btn-w-m btn-white button_cancel">取消</a>
+                                    </p>
+                                </div>
+                                <div class="allbox clearfix" id="allbox">
+                                    <div class="photobox fl" id="photobox">
+                                        <div id="box" class="imgbox">
+                                            <img src="" id="avatar">
+                                        </div>
+                                        <div class="btngroup">
+                                            <div class="btn btn-danger" id="Picker2">重新上传</div>
+                                            <button class="btn btn-primary" id="send">保存图片</button>
+                                        </div>
+                                    </div>
+                                    <div class="m-r fl">
+                                        <h3>头像预览</h3>
+                                        <div class="avatarlook">
+                                            <img id="photolook">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pic_item autopic clearfix" id="autopic">
+                            <div id="userAlbums" class="userAlbums fl" >
+                                <ul class="clearfix">
+                                    <li class="fancybox" >
+                                        <img src="../../../static/admin/images/index/p_1.jpg" alt="示例图片1" />
+                                    </li>
+                                    <li class="fancybox" >
+                                        <img src="../../../static/admin/images/index/p_2.jpg" alt="示例图片1" />
+                                    </li>
+                                    <li class="fancybox" >
+                                        <img src="../../../static/admin/images/index/p_3.jpg" alt="示例图片1" />
+                                    </li>
+                                    <li class="fancybox" >
+                                        <img src="../../../static/admin/images/index/p_4.jpg" alt="示例图片1" />
+                                    </li>
+                                    <li class="fancybox" >
+                                        <img src="../../../static/admin/images/index/p_5.jpg" alt="示例图片1" />
+                                    </li>
+                                    <li class="fancybox" >
+                                        <img src="../../../static/admin/images/index/p_6.jpg" alt="示例图片1" />
+                                    </li>
+                                    <li class="fancybox" >
+                                        <img src="../../../static/admin/images/index/p_7.jpg" alt="示例图片1" />
+                                    </li>
+                                    <li class="fancybox" >
+                                        <img src="../../../static/admin/images/index/p_8.jpg" alt="示例图片1" />
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="m-r fl">
+                                <h3>头像预览</h3>
+                                <div class="avatarlook">
+                                    <img id="piclook">
+                                </div>
+                                <div class="savegroup">
+                                    <button class="btn btn-danger" id="save">保存图片</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="result" id="result">
+        <p id="result-msg"></p>
+        <button type="button" class="btn btn-primary" id="resbtn">确定</button>
+    </div>
+    <!-- 基础文件 -->
+    <script src="../../../static/common/hplus/js/jquery.min.js?v=2.1.4"></script>
+    <script src="../../../static/common/hplus/js/bootstrap.min.js?v=3.3.6"></script>
+    <script src="../../../static/common/hplus/js/content.min.js?v=1.0.0"></script>
+        <!-- webupload文件 -->
+    <script src="../../../static/common/webuploader/webuploader.js"></script>
+    <script type="text/javascript">
+        //上传图片插件
+        var uid=1;
+        var uploader = WebUploader.create({
+            auto: true,
+            swf: '/static/common/webuploader/Uploader.swf',
+            server:"{:url('admin/index/picpro')}",
+            pick: '#Picker',
+            resize:false,
+            fileVal:'picname',
+            formData:{
+                uid:uid
+            },
+            duplicate :true,
+            accept: {
+                title: 'Images',
+                extensions: 'gif,jpg,jpeg,bmp,png',
+                mimeTypes: 'image/*'
+            }
+        });
+        uploader.on( 'uploadSuccess', function($file,response ) {
+            if(response.status==0){
+                $('#avatar').prop('src',response.name).show('slow');
+                $("#editorPanelButtons").hide();
+                $("#photolook").prop('src',response.name).show('slow');
+                $("#allbox").show();
+            }
+        });
+        var uploade = WebUploader.create({
+            auto: true,
+            swf: '/static/common/webuploader/Uploader.swf',
+            server:"{:url('admin/index/picpro')}",
+            pick: '#Picker2',
+            resize:false,
+            fileVal:'picname',
+            formData:{
+                uid:uid
+            },
+            duplicate :true,
+            accept: {
+                title: 'Images',
+                extensions: 'gif,jpg,jpeg,bmp,png',
+                mimeTypes: 'image/*'
+            }
+        });
+        uploade.on( 'uploadSuccess', function($file,response ) {
+            if(response.status==0){
+                $('#avatar').prop('src',response.name).show('slow');
+                $("#photolook").prop('src',response.name).show('slow');
+            }
+        });
+        $("#avatar-tab li").click(function () {
+            var index=$(this).index();
+            $(this).addClass("active").siblings("li").removeClass("active");
+            $(".pic_item").eq(index).show().siblings(".pic_item").hide();
+        })
+        $("#send").click(function(){
+            var picname= $("#avatar").prop('src');
+            $.ajax({
+                type:"post",
+                url:"{:url('admin/index/avatar')}",
+                data:{picname:picname},
+                dataType:"json",
+                success: function (data) {
+                    $("#result-msg").html(data.msg);
+                    $("#result").show();
+                    $("#resbtn").click(function () {
+                        $("#result").hide();
+                        $('#avatar').prop('src',"");
+                        $('#photolook').prop('src',"");
+                    })
+                }
+            })
+        })
+        $("#save").click(function(){
+            var picname= $("#piclook").prop('src');
+            $.ajax({
+                type:"post",
+                url:"{:url('admin/index/avatar')}",
+                data:{picname:picname},
+                dataType:"json",
+                success: function (data) {
+                    $("#result-msg").html(data.msg);
+                    $("#result").show();
+                    $("#resbtn").click(function () {
+                        $("#result").hide();
+                        $('#piclook').prop('src',"");
+                    })
+                }
+            })
+        })
+        $("#userAlbums").on("click","img", function () {
+            var picname=$(this).prop("src");
+            $("#piclook").prop("src",picname);
+        })
+    </script>
+</body>
+</html>

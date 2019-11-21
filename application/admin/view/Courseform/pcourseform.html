@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>私教课程基本信息</title>
+    <!--H+框架样式-->
+    <link href="../../../static/common/hplus/css/bootstrap.min14ed.css?v=3.3.6" rel="stylesheet">
+    <link href="../../../static/common/hplus/css/font-awesome.min93e3.css?v=4.4.0" rel="stylesheet">
+    <link href="../../../static/common/hplus/css/animate.min.css" rel="stylesheet">
+    <link href="../../../static/common/hplus/css/style.min862f.css?v=4.1.0" rel="stylesheet">
+    <!--自定义样式-->
+    <link href="../../../static/admin/css/common.css" rel="stylesheet">
+    <link href="../../../static/admin/css/base.css" rel="stylesheet">
+</head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>私教课程基本信息</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div class="row">
+                        <div class="deletegroup fl">
+                            <button type="button" class="btn btn-danger" id="deletesome">批量删除</button>
+                            <button type="button" class="btn btn-success" id="add">添加课程</button>
+                        </div>
+                        <div class="searchgroup fr col-sm-3">
+                            <div class="input-group">
+                                <div class="search-msg" id="search-msg">
+                                    <ul class="searchlist" id="searchlist"></ul>
+                                </div>
+                                <input type="text" placeholder="请输入课程名称" class="input-sm form-control" id="search" autocomplete="off">
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-sm btn-primary search-btn" id="search-btn">搜索</button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <table class="table table-striped table-bordered table-hover dataTables-example">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>编号</th>
+                                <th>课程名称</th>
+                                <th>课程价格</th>
+                                <th>限定人数</th>
+                                <th>现有人数</th>
+                                <th>课程定位</th>
+                                <th>课程教练</th>
+                                <th>课时</th>
+                                <th>操作员</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody"></tbody>
+                    </table>
+                    <div class="table-footer clearfix" id="table-footer">
+                        <div class="col-sm-3">共<span id="datacount"></span>项</div>
+                        <div class="page fr clearfix" id="page">
+                            <div class="pageup fl" id="pageup">上一页</div>
+                            <div class="pagelist fl clearfix" id="pagelist">
+                                <ul></ul>
+                            </div>
+                            <div class="pagedown fl" id="pagedown">下一页</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="isdel" id="isdel">
+        <p id="isdel-msg">确定要删除吗？</p>
+        <button type="button" class="btn btn-primary cancel" id="cancel">取消</button>
+        <button type="button" class="btn btn-danger" id="sure">确定</button>
+    </div>
+    <div class="result" id="result">
+        <p id="result-msg"></p>
+        <button type="button" class="btn btn-primary" id="resbtn">确定</button>
+    </div>
+</div>
+<div class="pop-up-plus areaform" id="pop-up-plus">
+    <div class="addbox">
+        <div class="ibox-title">
+            <h5 id="title"></h5>
+        </div>
+        <form accept-charset="utf-8" id="formlist" class="clearfix">
+            <input type="hidden" name="operator" value="{$Request.session.admin.adminname}">
+            <input type="hidden" name="id" class="updateid">
+            <div class="form-group col-sm-6 clearfix">
+                <label class="col-sm-4 control-label">课程名称</label>
+                <div class="col-sm-7">
+                    <input type="text" class="form-control" name="course_name" id="course_name">
+                </div>
+            </div>
+            <div class="form-group col-sm-6 clearfix">
+                <label class="col-sm-4 control-label">课程定位</label>
+                <div class="col-sm-7">
+                    <select name="role" id="role" class="form-control">
+                        <option value="初级私教课程" class="role">初级私教课程</option>
+                        <option value="中级私教课程" class="role">中级私教课程</option>
+                        <option value="高级私教课程" class="role">高级私教课程</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group col-sm-6 clearfix">
+                <label class="col-sm-4 control-label">课程教练</label>
+                <div class="col-sm-7">
+                    <select name="coachname" id="coachname" class="form-control">
+                        {foreach $res as $k=>$v}
+                        <option value="{$v.id}" class="coach">{$v.coachname}</option>
+                        {/foreach}
+                    </select>
+                </div>
+            </div>
+            <div class="form-group col-sm-6 clearfix">
+                <label class="col-sm-4 control-label">课程人数</label>
+                <div class="col-sm-7">
+                    <input type="text" class="form-control" name="course_num" id="course_num">
+                </div>
+            </div>
+            <div class="form-group col-sm-6 clearfix">
+                <label class="col-sm-4 control-label">课程价格</label>
+                <div class="col-sm-7">
+                    <input type="text" class="form-control" name="course_money" id="course_money">
+                </div>
+            </div>
+            <div class="form-group col-sm-6 clearfix">
+                <label class="col-sm-4 control-label">课时</label>
+                <div class="col-sm-7">
+                    <input type="text" class="form-control" name="course_hour" id="course_hour">
+                </div>
+            </div>
+            <div class="form-group col-sm-6 clearfix">
+                <label class="col-sm-4 control-label">课程介绍</label>
+                <div class="col-sm-7">
+                    <input type="text" class="form-control" name="described" id="described">
+                </div>
+            </div>
+            <div class="form-group col-sm-12 clearfix">
+                <div class="fr">
+                    <button class="btn btn-primary ccancel" type="button" >取消</button>
+                    <button class="btn btn-danger addbtn updatebtn" type="button" >提交</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{include file="Courseform/jspcourseform"}
+</body>
+</html>

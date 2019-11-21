@@ -1,0 +1,130 @@
+<script src="http://static.runoob.com/assets/jquery-validation-1.14.0/lib/jquery.js"></script>
+<script src="http://static.runoob.com/assets/jquery-validation-1.14.0/dist/jquery.validate.min.js"></script>
+<script>
+    //单选框选中样式
+    $(function () {
+        $(".el").on("click",function() {
+            $(this).parent('i').removeClass("check_bg_check");
+            var checked = $(this).prop('checked');
+            if(checked){
+                $(this).parent('i').addClass("check_bg_check").siblings("i").removeClass("check_bg_check");
+            }
+        })
+    });
+    $.extend($.validator.messages, {
+        required: "必填",
+        remote: "请修正此字段",
+        email: "格式错误",
+        url: "请输入有效的网址",
+        date: "请输入有效的日期",
+        dateISO: "请输入有效的日期 (YYYY-MM-DD)",
+        number: "请输入有效的数字",
+        digits: "只能数字",
+        creditcard: "请输入有效的信用卡号码",
+        equalTo: "你的输入不相同",
+        extension: "请输入有效的后缀",
+        maxlength: $.validator.format("最多可以输入 {0} 个字符"),
+        minlength: "11位数字",
+        rangelength: $.validator.format("请输入长度在 {0} 到 {1} 之间的字符串"),
+        range: $.validator.format("请输入范围在 {0} 到 {1} 之间的数值"),
+        max: $.validator.format("请输入不大于 {0} 的数值"),
+        min: $.validator.format("请输入不小于 {0} 的数值")
+    });
+     var validator= function (id) {
+             return $(id).validate({
+                debug:true,
+                rules:{
+                    powername:{
+                        required:true
+                    },
+                    described:{
+                        required:true
+                    },
+                    rolename:{
+                        required:true
+                    },
+                    adminpname:{
+                        required:true
+                    },
+                    adminname:{
+                        required:true
+                    },
+                    password:{
+                        required:true
+                    },
+                    phone:{
+                        required:true,
+                        minlength: 11,
+                        digits:true
+                    },
+                    email:{
+                        required:true,
+                        email:true
+                    },
+                    card_type:{
+                        required:true,
+                    },
+                    card_money:{
+                        required:true,
+                    },
+                    start_card:{
+                        required:true,
+                    },
+                    end_card:{
+                        required:true,
+                    },
+                    member_card:{
+                        required:true,
+                    },
+                    end_time:{
+                        required:true,
+                    },
+                    member_name:{
+                        required:true,
+                    },
+                    identity_card:{
+                        required:true,
+                    },
+                    consultant:{
+                        required:true,
+                    },
+                    money:{
+                        required:true,
+                    },
+                    jobnum:{
+                        required:true,
+                    },
+                    coachname:{
+                        required:true,
+                    },
+                    goodat:{
+                        required:true,
+                    },
+                    described:{
+                        required:true,
+                    },
+                    area_id:{
+                        required:true,
+                    },
+                    areaname:{
+                        required:true,
+                    },
+                    areaitem:{
+                        required:true,
+                    },
+                    course_name:{
+                        required:true,
+                    },
+                    course_num:{
+                        required:true,
+                    },
+                    course_money:{
+                        required:true,
+                    },
+                    course_hour:{
+                        required:true,
+                    }
+                },
+            })
+        }
+</script>

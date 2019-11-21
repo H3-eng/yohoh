@@ -1,0 +1,21 @@
+<script src="../../../static/common/hplus/js/jquery.min.js?v=2.1.4"></script>
+<script src="../../../static/common/hplus/js/bootstrap.min.js?v=3.3.6"></script>
+<script src="../../../static/common/hplus/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+<script src="../../../static/common/hplus/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+<script src="../../../static/common/hplus/js/plugins/layer/layer.min.js"></script>
+<script src="../../../static/common/hplus/js/hplus.min.js?v=4.1.0"></script>
+<script type="text/javascript" src="../../../static/common/hplus/js/contabs.min.js"></script>
+<script src="../../../static/common/hplus/js/plugins/pace/pace.min.js"></script>
+<script src="../../../static/common/formate.js"></script>
+<script src="../../../static/common/hplus/js/content.min.js?v=1.0.0"></script>
+<script>
+    //获取当前时间
+    $(function () {
+        setInterval(function () {
+            var timedata=new Date().getTime();
+            var time=formatedate(timedata);
+            $("#time").html(time);
+        },1000);
+
+    })
+</script>

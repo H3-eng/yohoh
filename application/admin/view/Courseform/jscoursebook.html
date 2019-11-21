@@ -1,0 +1,146 @@
+<script src="../../../static/common/hplus/js/jquery.min.js?v=2.1.4"></script>
+<script src="../../../static/common/hplus/js/bootstrap.min.js?v=3.3.6"></script>
+<script src="../../../static/common/hplus/js/content.min.js?v=1.0.0"></script>
+<script src="../../../static/common/page.js"></script>
+<script>
+    var totalNum,pageSize,totalPage;
+    //页面加载时动态显示数据
+    function getData(page){
+        $.ajax({
+            type:'get',
+            url:"{:url('admin/Courseform/coursebookshow')}",
+            data:{page:page},
+            dataType:"json",
+            success:function(data){
+                if(data){
+                    totalNum=data[0].totalNum;//总记录数
+                    pageSize=data[0].pageSize;//每页数量
+                    totalPage=data[0].totalPage;//总页数
+                    var str='';
+                    for(var i=1;i<data.length;i++){
+                        str+="<tr id=tr_"+data[i].id+">";
+                        str+="<td><input type='checkbox' class='checkbox'code="+data[i].id+"></td>";
+                        str+="<td>"+data[i].id+"</td>";
+                        str+="<td>"+data[i].member_card+"</td>";
+                        str+="<td>"+data[i].member_name+"</td>";
+                        str+="<td>"+data[i].create_time+"</td>";
+                        str+="<td>"+data[i].update_time+"</td>";
+                        str+="<td>"+data[i].issue+"</td>";
+                        str+="<td>"+data[i].operator+"</td>";
+                        str += "<td><a href='courseshoworder?id="+ data[i].order_id +"' class='look' code='" + data[i].order_id +"'>查看详情</a></td>";
+                        str += "</tr>";
+                    }
+                    $("#tbody").html(str);
+                    var datacount=totalNum;
+                    $("#datacount").html(datacount);
+                    //获取分页样式
+                    if (page==1) {
+                        getPageBar();
+                        $("#table-footer").show();
+                    }
+                }else{
+                    var str='';
+                    str+="<tr><td colspan='9'>数据请求失败</td></tr>";
+                    $("#tbody").html(str);
+                    $("#table-footer").hide();
+                }
+            }
+        })
+    }
+    //页面加载初始化第一页
+    $(function(){
+        getData(1);
+    })
+    //动态搜索功能
+    $("#search").off().keyup(function () {
+        $("#searchlist").html('');
+        var data=$(this).val().trim();
+        $.ajax({
+            url: "{:url('admin/Courseform/booksearch')}",
+            type: 'post',
+            dataType: 'json',
+            data: {data:data},
+            success:function(data){
+                if(data){
+                    var str="";
+                    if(data.length>5){
+                        data.length=5;
+                    }
+                    for(var i=0;i<data.length;i++){
+                        str+="<li code='"+data[i].id+"'>"+data[i].member_name+"</li>";
+                    }
+                    var swidth=$("#search").width()+24;
+                    $("#search-msg").css("width",swidth);
+                    $("#search-msg").show();
+                    $("#searchlist").html(str);
+                    //改变列表的颜色
+                    $("#searchlist li").hover(function(){
+                        $(this).css("background-color",'#e7e7e7');
+                    }, function () {
+                        $(this).css("background-color",'#fff');
+                    })
+                    $("#searchlist li").click(function () {
+                        var msg=$(this).html();
+                        $("#search").val(msg);
+                        $("#search-msg").hide();
+                    })
+                }
+            }
+        })
+    })
+    window.onresize = function(){
+        var swidth=$("#search").width()+24;
+        $("#search-msg").css("width",swidth);
+    }
+    //搜索按钮点击开始搜索
+    $("#search-btn").off().click(function () {
+        var data=$("#search").val();
+        $.ajax({
+            url: "{:url('admin/Courseform/booksearch')}",
+            type: 'post',
+            dataType: 'json',
+            data: {data:data},
+            success: function (data) {
+                if(data){
+                    var str='';
+                    for(var i=0;i<data.length;i++){
+                        str+="<tr id=tr_"+data[i].id+">";
+                        str+="<td><input type='checkbox' class='checkbox'code="+data[i].id+"></td>";
+                        str+="<td>"+data[i].id+"</td>";
+                        str+="<td>"+data[i].member_card+"</td>";
+                        str+="<td>"+data[i].member_name+"</td>";
+                        str+="<td>"+data[i].create_time+"</td>";
+                        str+="<td>"+data[i].update_time+"</td>";
+                        str+="<td>"+data[i].issue+"</td>";
+                        str+="<td>"+data[i].operator+"</td>";
+                        str += "<td><a href='courseshoworder?id="+ data[i].order_id +"' class='look' code='" + data[i].order_id +"'>查看详情</a></td>";
+                        str += "</tr>";
+                    }
+                    str+="<tr><td colspan='9'><a  class='rehome'>返回第一页</a></td></tr>";
+                    $("#tbody").html(str);
+                    $("#table-footer").hide();
+                    $(".rehome").off().click(function(){
+                        getData(1);
+                    })
+                }else{
+                    var str='';
+                    str+="<tr><td colspan='9'>数据不存在</td></tr>";
+                    str+="<tr><td colspan='9'><a  class='rehome'>返回第一页</a></td></tr>";
+                    $("#tbody").html(str);
+                    $("#table-footer").hide();
+                    $(".rehome").off().click(function(){
+                        getData(1);
+                    })
+                }
+            }
+        })
+    })
+    //操作弹窗关闭
+    $("#issuecan").click(function () {
+       $("#normalbox").hide();
+    })
+    // 结果弹窗关闭
+    $("#resbtn").click(function () {
+        $("#result").hide();
+    })
+</script>

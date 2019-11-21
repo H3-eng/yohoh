@@ -1,0 +1,222 @@
+<script src="../../../static/common/hplus/js/jquery.min.js?v=2.1.4"></script>
+<script src="../../../static/common/hplus/js/bootstrap.min.js?v=3.3.6"></script>
+<script src="../../../static/common/hplus/js/content.min.js?v=1.0.0"></script>
+<script>
+    //复选框选中样式
+    $(function () {
+        $(".el").on("click",function() {
+            $(this).parent('i').removeClass("check_bg_check");
+            var checked = $(this).prop('checked');
+            if(checked){
+                $(this).parent('i').addClass("check_bg_check");
+            }
+        })
+    });
+    //选择好场地后点击确定按钮
+    $(".send").click(function () {
+        //判断不能预订超过3片场地
+        var sum=0;
+        $(".el").each(function () {
+            var checked = $(this).prop('checked');
+            if(checked){
+               sum=sum+1;
+            }
+        })
+       if(sum>3){
+           $("#result-con").html("最多选择3片场地");
+           $(".result").show();
+       }else{
+           var arr=[];
+           //遍历复选框记录选中信息
+           $(".el").each(function () {
+               if($(this).prop('checked')){
+                   var data={};
+                   var time=$(this).attr("ctde");
+                   data['time']=time;
+                   var areanum=$(this).attr("code");
+                   data['areanum']=areanum;
+                   var money=$(this).attr("cpde");
+                   data['money']=money;
+                   var areaname=$(this).attr("cnde");
+                   data['areaname']=areaname;
+                   arr.push(data);
+                   orderlist();
+               }
+           })
+          function orderlist() {
+              var str = "";
+              var num = 0;
+              for (var i = 0; i < arr.length; i++) {
+                  num = num + parseFloat(arr[i]["money"]);
+                  str += "<li>";
+                  str += "<span>" + arr[i]["areaname"] + " " + arr[i]["areanum"] + "号道" + arr[i]["time"] + "</span>";
+                  str += "<span class='fr'>￥" + arr[i]["money"] + "</span>";
+                  str += "</li>";
+                  str += "<hr>";
+              }
+              var money = "￥" + num;
+              $("#order-ul").html(str);
+              $(".total").html(money);
+              $("#orders").click(function () {
+                  $("#issure-con").html("确定要预订吗？");
+                  $(".issure").show()
+                  $("#issurebtn").click(function () {
+                      $(".issure").hide();
+                      $("#getmoney").show();
+                      $("#success").off().click(function () {
+                          var member_name = $("#member_name").val();
+                          //调用函数记录订单数据
+                          orderdata(arr, member_name, num);
+                      })
+                  })
+              })
+          }
+       }
+    })
+    //付款成功后记录订单信息
+    function orderdata(str,name,totalmoney){
+        var member_id=$("#member_id").val();
+        var order_id=new Date().getTime()+"_"+member_id;
+        var date=$("#date").val();
+        $.ajax({
+            type:"post",
+            url:"{:url('home/Index/bookarea')}",
+            data:{
+                str:str,
+                name:name,
+                totalmoney:totalmoney,
+                member_id:member_id,
+                order_id:order_id,
+                date:date
+            },
+            dataType:"json",
+            success: function (data) {
+                if(data){
+                    $("#result-con").html("预订成功");
+                    $("#getmoney").hide();
+                    $(".result").show();
+                    $(".el").each(function () {
+                        $(this).prop("checked",false);
+                    })
+                    $("#sure").click(function(){
+                        $(".result").hide();
+                    })
+                    getdata();
+                }else{
+                    $("#result-con").html("预订失败，请与工作人员核对信息");
+                    $("#getmoney").hide();
+                    $(".result").show();
+                    $("#sure").click(function(){
+                        $(".result").hide();
+                    })
+                }
+            }
+        })
+    }
+    //弹窗关闭
+    $("#sure").click(function(){
+        $(".result").hide();
+    })
+    //支付码弹窗
+    $(".closebtn").click(function () {
+        $("#getmoney").hide();
+    })
+    $(function () {
+        //场地列表样式
+        //初始化第一页样式
+        $("#list-hole li").eq(0).addClass("active").siblings("li").removeClass("active");
+        $(".data").eq(0).show().siblings(".data").hide();
+        $("#areaname").html($("#list-hole li").eq(0).html());
+        //场地列表点击时候
+        $("#list-hole").on("click","li",function () {
+            $(this).addClass("active").siblings("li").removeClass("active");
+            $("#areaname").html($(this).html());
+            var index=$(this).index();
+            $(".data").eq(index).show().siblings(".data").hide();
+            getdata();
+        })
+        //动态获取日期列表
+        var str="";
+        for(var i=0;i<5;i++){
+            str+="<li class='date-group'>";
+            str+="<div class='week'>"+getDay(i).split(",")[1]+"</div>";
+            str+="<div class='stock'>剩余3</div>";
+            str+= "<div class='date'>"+getDay(i).split(",")[0]+"</div>";
+            str+="</li>";
+        }
+        $("#datetime").html(str);
+        //初始化第一页的日期列表
+        $("#date").val($(".date").eq(0).html());
+        $("#datemsg").html($(".date").eq(0).html());
+        $(".date-group").eq(0).addClass("current").siblings("li").removeClass("current");
+        $(".date-group").click(function () {
+            $("#date").val($(this).children(".date").html());
+            $("#datemsg").html($(this).children(".date").html());
+            $(this).addClass("current").siblings("li").removeClass("current");
+            getdata();
+        })
+        getdata();
+        //获取日期函数
+        function getDay(day){
+            var today = new Date();
+            var targetday_milliseconds=today.getTime() + 1000*60*60*24*day;
+            today.setTime(targetday_milliseconds); //注意，这行是关键代码
+            var tMonth = today.getMonth();
+            var tDate = today.getDate();
+            var tDay = today.getDay();
+            var weeks = ["星期日","星期一","星期二","星期三","星期四","星期五","星期六"];
+            var week = weeks[tDay];
+            tMonth = doHandleMonth(tMonth + 1);
+            tDate = doHandleMonth(tDate);
+            return tMonth+"月"+tDate+"日"+","+week;
+        }
+        function doHandleMonth(month){
+            var m = month;
+            if(month.toString().length == 1){
+                m = "0" + month;
+            }
+            return m;
+        }
+    })
+    //获取已预订的场地信息
+    function getdata(){
+        var areaname="";
+        var index=-1;
+        $("#list-hole li").each(function () {
+            if($(this).hasClass("active")){
+                areaname=$(this).html();
+                index=$(this).index();
+            };
+        });
+        $(".status").prop("disabled",false);
+        $(".disable").hide();
+        var date=$("#date").val();
+        $.ajax({
+            type:"post",
+            url:"{:url('home/Index/searchdate')}",
+            data:{
+                date:date,
+                areaname:areaname
+            },
+            dataType:"json",
+            success: function (data) {
+                if(data){
+                    for(var i=0;i<data.length;i++){
+                        var areanum=data[i]['areanum'];
+                        var time=data[i]['time'];
+                       $(".el").each(function(){
+                           if($(this).attr("code")==areanum&&$(this).attr("ctde")==time){
+                               $(this).prop("disabled",true);
+                               $(this).siblings(".disable").show();
+                           }
+                       })
+                    }
+                }else{
+                    $(".el").each(function(){
+                        $(this).prop("checked",false);
+                    })
+                }
+            }
+        })
+    }
+</script>

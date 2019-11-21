@@ -1,0 +1,112 @@
+<script src="../../../static/home/js/jquery-2.2.3.min.js"></script>
+<script src="../../../static/home/js/bootstrap.js"></script>
+<script>
+	/*模块切换*/
+	$("#coachtype li").off().click(function () {
+		var code=$(this).index();
+		$(".coach-all").eq(code).show().siblings(".coach-all").hide();
+		$(this).addClass('active').siblings("li").removeClass("active");
+	})
+	//动态搜索功能
+	$("#search").keyup(function () {
+		$("#searchlist").html('');
+		var data=$(this).val().trim();
+		$.ajax({
+			url: "{:url('home/Coach/search')}",
+			type: 'post',
+			dataType: 'json',
+			data: {data:data},
+			success:function(data){
+				if(data){
+					var str="";
+					if(data.length>5){
+						data.length=5;
+					}
+					for(var i=0;i<data.length;i++){
+						str+="<li code='"+data[i].id+"'>"+data[i].coachname+"</li>";
+					}
+					var swidth=$("#search").width()+44;
+					$("#search-msg").css("width",swidth);
+					$("#search-msg").show();
+					$("#searchlist").html(str);
+					//改变列表的颜色
+					$("#searchlist li").hover(function(){
+						$(this).css("background-color",'#e7e7e7');
+					}, function () {
+						$(this).css("background-color",'#fff');
+					})
+					$("#searchlist li").click(function () {
+						var msg=$(this).html();
+						$("#search").val(msg);
+						var id=$(this).attr("code");
+						$("#search-msg").hide();
+					})
+				}
+				else{
+					$("#search-msg").hide();
+				}
+			}
+		})
+	})
+	window.onresize = function(){
+		var swidth=$("#search").width()+44;
+		$("#search-msg").css("width",swidth);
+	}
+	//搜索按钮点击开始搜索
+	$("#search-btn").click(function () {
+		var data=$("#search").val();
+		searchname(data);
+	})
+	function searchname(data){
+		$.ajax({
+			url: "{:url('home/Coach/searchbtn')}",
+			type: 'post',
+			dataType: 'json',
+			data: {data:data},
+			success: function (data) {
+				if(data){
+					var str='';
+					str+="<div class='list-item clearfix'>";
+					str+="<div class='coachs-picture col-md-2'>";
+					str+="<img src='../../.."+data[0]['pic_name']+"'>";
+					str+="</div>";
+					str+="<div class='coachs-text col-md-10'>";
+					str+="<h3>"+data[0]['coachname']+"</h3>";
+					str+="<p>"+data[0]['described']+"</p>";
+					str+="</div>";
+					$("#coach-listcon").html(str);
+					$("#search-con").show().siblings(".coach-all").hide();
+				}else{
+					var str='';
+					str+="<div class='error'>查找失败，没有该教练</div>";
+					$("#coach-listcon").html(str);
+					$("#search-con").show().siblings(".coach-all").hide();
+				}
+			}
+		})
+	}
+	//显示热门教练
+	$(function(){
+		$.ajax({
+			type:'get',
+			url:"{:url('home/Coach/searchhot')}",
+			dataType:"json",
+			success:function(data){
+				if(data){
+					var str='';
+					for(var i=0;i<data.length;i++){
+						str+="<li class='namelist' code='"+data[i].coachname+"'>"+data[i].coachname+"</li>";
+					}
+					$("#hot").html(str);
+					$(".namelist").click(function () {
+						var data=$(this).attr("code");
+						searchname(data);
+					})
+				}else{
+					var str='';
+					$("#hot").html(str);
+				}
+			}
+		})
+	})
+</script>

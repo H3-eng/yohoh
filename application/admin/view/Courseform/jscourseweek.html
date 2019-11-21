@@ -1,0 +1,276 @@
+<script src="../../../static/common/hplus/js/jquery.min.js?v=2.1.4"></script>
+<script src="../../../static/common/hplus/js/bootstrap.min.js?v=3.3.6"></script>
+<script src="../../../static/common/hplus/js/content.min.js?v=1.0.0"></script>
+<script src="../../../static/common/page.js"></script>
+{include file="Common/jsformcheck"}
+<script>
+    var totalNum,pageSize,totalPage;
+    //页面加载时动态显示数据
+    function getData(page){
+        $.ajax({
+            type:'get',
+            url:"{:url('admin/Courseform/courseweekshow')}",
+            data:{page:page},
+            dataType:"json",
+            success:function(data){
+                if(data){
+                    totalNum=data[0].totalNum;//总记录数
+                    pageSize=data[0].pageSize;//每页数量
+                    totalPage=data[0].totalPage;//总页数
+                    var str='';
+                    for(var i=1;i<data.length;i++){
+                        str+="<tr id=tr_"+data[i].id+">";
+                        str+="<td><input type='checkbox' class='checkbox'code="+data[i].id+"></td>";
+                        str+="<td>"+data[i].id+"</td>";
+                        str+="<td>"+data[i].course_name+"</td>";
+                        str+="<td>"+data[i].areaname+"</td>";
+                        str+="<td>"+data[i].coachname+"</td>";
+                        str+="<td>"+data[i].course_time+"</td>";
+                        str+="<td>"+data[i].course_hour+"</td>";
+                        str+="<td>"+data[i].course_week+"</td>";
+                        str+="<td>"+data[i].course_num+"</td>";
+                        str+="<td>"+data[i].book_num+"</td>";
+                        str+="<td>"+data[i].operator+"</td>";
+                        str+="<td><a class='fa fa-pencil update' code="+data[i].id+"></a><a class='fa fa-trash delete' code="+data[i].id+"></a></td>";
+                        str+="</tr>";
+                    }
+                    $("#tbody").html(str);
+                    var datacount=totalNum;
+                    $("#datacount").html(datacount);
+                    $(".delete").off().click(function(){
+                        var id=$(this).attr('code');
+                        del(id);//调用删除数据函数
+                    });
+                    $(".update").off().click(function(){
+                        var id=$(this).attr('code');
+                        $("#formlist").find("input").removeClass("error");
+                        validator("#formlist").resetForm();
+                        updateshow(id);//调用修改数据函数
+                    });
+                    //获取分页样式
+                    if (page==1) {
+                        getPageBar();
+                        $("#table-footer").show();
+                    }
+                }else{
+                    var str='';
+                    str+="<tr><td colspan='13'>数据请求失败</td></tr>";
+                    $("#tbody").html(str);
+                    $("#table-footer").hide();
+                }
+            }
+        })
+    }
+    //页面加载初始化第一页
+    $(function(){
+        getData(1);
+    })
+    //添加操作
+    $("#add").off().click(function () {
+        $("#formlist").find("input").removeClass("error");
+        validator("#formlist").resetForm();
+        $("#title").html("添加课程");
+        $("#pop-up-plus").show();
+        $("#formlist")[0].reset();
+        $(".addbtn").off().click(function(){
+            if(validator("#formlist").form()){
+                var data=$("#formlist").serialize();
+                $.ajax({
+                    type: "post",
+                    url: "{:url('admin/Courseform/weekadd')}",
+                    dataType: "json",
+                    data:data,
+                    success:function(data){
+                        if (data.code==1) {
+                            $(".pop-up-plus").hide();
+                            $("#result-msg").html(data.msg);
+                            $(".result").show();
+                            $("#resbtn").click(function() {
+                                $(".result").hide();
+                                getData(1);
+                            });
+                        }else {
+                            $(".pop-up-plus").hide();
+                            $("#result-msg").html(data.msg);
+                            $(".result").show();
+                            $("#resbtn").click(function() {
+                                $(".result").hide();
+                            })
+                        }
+                    }
+                })
+            }
+        })
+    })
+    function updateshow(id){
+        $("#formlist")[0].reset();
+        $(".updateid").val(id);
+        $("#title").html("修改课程");
+        $.ajax({
+            type:"post",
+            url:"{:url('admin/Courseform/weekupdateshow')}",
+            dataType:"json",
+            data:{id:id},
+            success:function(data){
+                if (data) {
+                    $(".course").each(function () {
+                        if(data.course_name==$(this).val()){
+                            $(this).prop('selected','selected');
+                        }
+                    });
+                    $(".area").each(function () {
+                        if(data.course_area==$(this).val()){
+                            $(this).prop('selected','selected');
+                        }
+                    });
+                    $(".coach").each(function () {
+                        if(data.course_coach==$(this).val()){
+                            $(this).prop('selected','selected');
+                        }
+                    });
+                    $("#course_hour").val(data.course_hour);
+                    $(".project").each(function () {
+                        if(data.course_week==$(this).val()){
+                            $(this).prop('selected','selected');
+                        }
+                    });
+                    $(".time").each(function () {
+                        if(data.course_time==$(this).val()){
+                            $(this).prop('selected','selected');
+                        }
+                    });
+                    $("#course_num").val(data.course_num);
+                    $("#pop-up-plus").show();
+                    $(".updatebtn").off().click(function(){
+                        if(validator("#formlist").form()){
+                            update();
+                        }
+                    })
+                }else{
+                    $("#result-msg").html("该操作不可用");
+                    $(".result").show();
+                    $("#resbtn").click(function() {
+                        $(".result").hide();
+                    })
+                }
+            }
+        })
+    }
+    //修改操作
+    function update(){
+        var data=$("#formlist").serialize();
+        $.ajax({
+            type:"post",
+            url:"{:url('admin/Courseform/weekupdate')}",
+            dataType:"json",
+            data:data,
+            success:function(data){
+                if (data.code==1) {
+                    $(".pop-up-plus").hide();
+                    $("#result-msg").html(data.msg);
+                    $(".result").show();
+                    $("#resbtn").click(function() {
+                        $(".result").hide();
+                        var p=1;
+                        $("#pagelist ul li").each(function () {
+                            if($(this).hasClass("on")){
+                                p=$(this).html();
+                            }
+                        })
+                        getData(p);
+                    });
+                }else {
+                    $(".pop-up-plus").hide();
+                    $("#result-msg").html(data.msg);
+                    $(".result").show();
+                    $("#resbtn").click(function() {
+                        $(".result").hide();
+                    })
+                }
+            }
+        })
+    }
+    // 删除操作
+    function del(id){
+        $("#isdel").show();
+        $("#sure").off().click(function () {
+            $("#isdel").hide();
+            $.ajax({
+                url: "{:url('admin/Courseform/weekdelete')}",
+                type: 'post',
+                dataType: 'json',
+                data: {id:id},
+                success:function(data){
+                    if (data.code==1) {
+                        $("#result-msg").html(data.msg);
+                        $("#result").show();
+                        $("#resbtn").click(function() {
+                            $(".result").hide();
+                            var p=1;
+                            $("#pagelist ul li").each(function () {
+                                if($(this).hasClass("on")){
+                                    p=$(this).html();
+                                }
+                            })
+                            getData(p);
+                        });
+                    }else{
+                        $("#result-msg").html(data.msg);
+                        $("#result").show();
+                        $("#resbtn").click(function() {
+                            $(".result").hide();
+                        })
+                    }
+                }
+            })
+        })
+    }
+    //批量删除操作
+    $("#deletesome").click(function(){
+        $("#isdel").show();
+        $("#sure").off().click(function () {
+            $("#isdel").hide();
+            var checkboxs=$(".checkbox");
+            var arr=[];
+            for (var i = 0; i < checkboxs.length; i++) {
+                if(checkboxs.eq(i).prop("checked")){
+                    var ids=checkboxs.eq(i).attr('code');
+                    arr.push(ids)
+                }
+            };
+            $.ajax({
+                url: "{:url('admin/Courseform/weekdeletesome')}",
+                type: 'post',
+                dataType: 'json',
+                data: {ids:arr},
+                success:function(data){
+                    if (data.code==1) {
+                        $("#result-msg").html(data.msg);
+                        $("#result").show();
+                        $("#resbtn").click(function() {
+                            getData(1);
+                        });
+                    }else{
+                        $("#result-msg").html(data.msg);
+                        $("#result").show();
+                        $("#resbtn").click(function() {
+                            $(".result").hide();
+                        })
+                    }
+                }
+            })
+        })
+    })
+    //操作弹窗关闭
+    $(".ccancel").click(function () {
+        $("#pop-up-plus").hide();
+    })
+    //是否删除弹窗关闭
+    $("#cancel").click(function () {
+        $("#isdel").hide();
+    })
+    // 结果弹窗关闭
+    $("#resbtn").click(function () {
+        $("#result").hide();
+    })
+</script>

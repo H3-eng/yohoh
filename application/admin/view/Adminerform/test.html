@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>权限管理</title>
+    <!--H+框架样式-->
+    <link href="/static/common/hplus/css/bootstrap.min14ed.css?v=3.3.6" rel="stylesheet">
+    <link href="/static/common/hplus/css/font-awesome.min93e3.css?v=4.4.0" rel="stylesheet">
+    <link href="/static/common/hplus/css/animate.min.css" rel="stylesheet">
+    <link href="/static/common/hplus/css/style.min862f.css?v=4.1.0" rel="stylesheet">
+    <!--自定义样式-->
+    <link href="/static/admin/css/base.css" rel="stylesheet">
+    <link href="/static/admin/css/common.css" rel="stylesheet">
+</head>
+<body class="gray-bg">
+<form accept-charset="utf-8" id="formlist">
+            <input type="hidden" name="id" class="updateid">
+            <input type="hidden" name="operator" value="{$Request.session.admin.adminname}" >
+            <div class="form-group clearfix">
+                <label class="col-sm-4 control-label">权限名称</label>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" name="powername" id="powername" >
+                </div>
+            </div>
+            <div class="form-group clearfix">
+                <label class="col-sm-4 control-label">权限描述</label>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" name="described" id="described">
+                </div>
+            </div>
+            <div class="form-group clearfix">
+                <div class="col-sm-6 col-sm-offset-3 fr">
+                    <button class="btn btn-primary ccancel" type="button" >取消</button>
+                    <button class="btn btn-danger addbtn updatebtn" type="button" >提交</button>
+                </div>
+            </div>
+        </form>
+<!-- 基础文件 -->
+<script src="/static/common/hplus/js/jquery.min.js?v=2.1.4"></script>
+<script src="/static/common/hplus/js/bootstrap.min.js?v=3.3.6"></script>
+<script src="http://static.runoob.com/assets/jquery-validation-1.14.0/lib/jquery.js"></script>
+<script src="http://static.runoob.com/assets/jquery-validation-1.14.0/dist/jquery.validate.min.js"></script>
+{include file="common/jsformcheck"}
+<script>
+    $(".addbtn").click(function () {
+        var str="#formlist";
+        if(validate("#formlist").form()){
+            $.ajax({
+                type: "post",
+                url: "{:url('admin/adminerform/testform')}",
+                dataType: "json",
+                data: {id: 11},
+                success: function (data) {
+                    alert(data)
+                }
+            })
+        }
+    })
+//    var str="#formlist";
+//    validate(str);
+
+//    }
+</script>
+</body>
+</html>

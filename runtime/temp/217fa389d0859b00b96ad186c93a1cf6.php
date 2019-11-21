@@ -1,0 +1,131 @@
+<?php /*a:1:{s:76:"/www/users/HA630745/WEB/yahoh/application/admin/view/Newsform/activitya.html";i:1571629486;}*/ ?>
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>会员活动添加页面</title>
+	<!--H+框架样式-->
+	<link href="../../../static/common/hplus/css/bootstrap.min14ed.css?v=3.3.6" rel="stylesheet">
+	<link href="../../../static/common/hplus/css/font-awesome.min93e3.css?v=4.4.0" rel="stylesheet">
+	<link href="../../../static/common/hplus/css/animate.min.css" rel="stylesheet">
+	<link href="../../../static/common/hplus/css/style.min862f.css?v=4.1.0" rel="stylesheet">
+	<!--百度编辑器样式-->
+	<link rel="stylesheet" type="text/css" href="../../../static/common/utf8-php/themes/default/css/ueditor.css">
+	<!--webupload框架样式-->
+	<link rel="stylesheet" href="../../../static/common/webuploader/webuploader.css">
+	<!--自定义样式-->
+	<link rel="stylesheet" type="text/css" href="../../../static/admin/css/base.css">
+	<link rel="stylesheet" type="text/css" href="../../../static/admin/css/common.css">
+</head>
+<body>
+<div class="ibox-content">
+	<a href="<?php echo url('admin/newsform/activity'); ?>" class="btn btn-danger">返回上一页</a>
+	<form class="form-horizontal" action="<?php echo url('admin/newsform/activityAddpro'); ?>" method="post" accept-charset="utf-8" id="formlist">
+		<input type="hidden" name="author" value="<?php echo htmlentities(app('request')->session('admin.adminname')); ?>">
+		<div class="form-group">
+			<label class="col-sm-3 control-label">文章标题</label>
+			<div class="col-sm-6">
+				<input type="text" class="form-control" name="title" id="title" placeholder="请输入文章标题" autofocus>
+			</div>
+			<label for="title" class="col-sm-1 error"></label>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-3 control-label">文章副标题</label>
+			<div class="col-sm-6">
+				<input type="text" class="form-control"  name="subtitle" placeholder="请输入文章副标题(可选)">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-3 control-label">关键词</label>
+			<div class="col-sm-6">
+				<input type="text" class="form-control"  name="keyword" placeholder="请输入文章关键词(可选)">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-3 control-label">文章内容</label>
+			<div class="col-sm-6">
+				<textarea name="content" id="editor"  type="text/plain" class="knowledge-content"></textarea>
+			</div>
+		</div>
+		<div class="form-group">
+			<input type="hidden" name="pic_name" id="pic_name">
+			<label class="col-sm-3 control-label">文章封面</label>
+			<div class="col-sm-5 uploadbox">
+				<div id="box" class="photobox fl">
+					<img src="../../../static/admin/images/bg.png" id="avatar">
+				</div>
+				<div class="reupload fl" id="Picker">上传图片</div>
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-8 control-label"></label>
+			<div class="col-sm-4 fr">
+				<button type="submit" class="btn btn-success" id="send">发布</button>
+				<button type="reset" class="btn btn-danger">重置</button>
+			</div>
+		</div>
+	</form>
+</div>
+<!-- 基础文件 -->
+<script src="../../../static/common/hplus/js/jquery.min.js?v=2.1.4"></script>
+<script src="../../../static/common/hplus/js/bootstrap.min.js?v=3.3.6"></script>
+<!-- 百度编译器文件 -->
+<script type="text/javascript" src="../../../static/common/utf8-php/ueditor.config.js"></script>
+<script type="text/javascript" src="../../../static/common/utf8-php/ueditor.all.js"></script>
+<script type="text/javascript" src="../../../static/common/utf8-php/lang/zh-cn/zh-cn.js"></script>
+<!-- webupload文件 -->
+<script src="../../../static/common/webuploader/webuploader.js"></script>
+<script src="http://static.runoob.com/assets/jquery-validation-1.14.0/lib/jquery.js"></script>
+<script src="http://static.runoob.com/assets/jquery-validation-1.14.0/dist/jquery.validate.min.js"></script>
+<!-- 创建编辑器并设置属性 -->
+<script type="text/javascript">
+	$("#formlist").validate({
+		onfocusout: function(element) { $(element).valid(); },
+		rules: {
+			title:{
+				required:true,
+			},
+		},
+		messages:{
+			title:{
+				required:"必填项",
+			},
+		}
+	})
+//实例化编辑器
+var ue = UE.getEditor('editor',{
+    initialFrameHeight: 280,
+    // initialFrameWidth: 500,
+});
+//上传图片插件
+var uid=1;
+var uploader = WebUploader.create({
+	auto: true,
+	swf: '/static/common/webuploader/Uploader.swf',
+	server:"<?php echo url('admin/Newsform/apicpro'); ?>",
+	pick: '#Picker',
+	resize:false,
+	fileVal:'picname',
+	formData:{
+		uid:uid
+	},
+	duplicate :true,
+	accept: {
+		title: 'Images',
+		extensions: 'gif,jpg,jpeg,bmp,png',
+		mimeTypes: 'image/*'
+	}
+});
+uploader.on( 'uploadSuccess', function($file,response ) {
+	if(response.status==0){
+		$('#avatar').prop('src',response.name).show('slow');
+	}
+});
+$("#send").click(function(){
+	var picname= $("#avatar").prop('src');
+	$("#pic_name").val(picname);
+})
+</script>
+</body>
+</html>
